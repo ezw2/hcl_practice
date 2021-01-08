@@ -57,7 +57,6 @@ def top_digit_rec(dtype=hcl.Int(), target=None):
         return data
 
     def kernel_digit_rec(training_set, test_set, result):
-        #temp_result = hcl.compute((NUM_TEST,), lambda x: 0, "temp_result")
         
         with hcl.for_(0, NUM_TEST) as t:
             dists = hcl.compute((K_CONST,), lambda x: 0, "dists")
@@ -71,7 +70,7 @@ def top_digit_rec(dtype=hcl.Int(), target=None):
 
             max_label = hcl.compute((1,), lambda x: 0, "max_label")
             knn_vote(labels, max_label)
-            result[t] = max_label[0]
+            #result[t] = max_label[0]
             
     training_set = hcl.placeholder((NUM_TRAINING * DIGIT_WIDTH,), "training_set")
     test_set = hcl.placeholder((NUM_TEST * DIGIT_WIDTH,), "test_set")
@@ -92,7 +91,7 @@ def codegen():
         fp.write(f)
         fp.close()
 
-def initial_test():
+def test_zeros():
     Tdtype = hcl.Int()
     Rdtype = hcl.Int()
     
@@ -109,52 +108,52 @@ def initial_test():
 
     f(hcl_training, hcl_test_set, hcl_results)
     
-    
-def test():
-    
-    Tdtype = hcl.Int()
-    Rdtype = hcl.Int()
-
-    dtype = hcl.Int()
-    f = top_digit_rec(dtype)
-
-    np_results = hcl.cast_np(np.zeros((NUM_TEST,), dtype=int), Rdtype)
-    hcl_results = hcl.asarray(np_results, dtype = Rdtype)
-        
-    np_training_0 = np.loadtxt("data/training_set_0.dat")
-    np_training_1 = np.loadtxt("data/training_set_1.dat")
-    np_training_2 = np.loadtxt("data/training_set_2.dat")
-    np_training_3 = np.loadtxt("data/training_set_3.dat")
-    np_training_4 = np.loadtxt("data/training_set_4.dat")
-    np_training_5 = np.loadtxt("data/training_set_5.dat")
-    np_training_6 = np.loadtxt("data/training_set_6.dat")
-    np_training_7 = np.loadtxt("data/training_set_7.dat")
-    np_training_8 = np.loadtxt("data/training_set_8.dat")
-    np_training_9 = np.loadtxt("data/training_set_9.dat")
-    
-    np_training = np.concatenate((np_training_0, np_training_1, np_training_2, np_training_3, np_training_4, np_training_5, np_training_6, np_training_7, np_training_8, np_training_9), axis = 0)
-    
-    hcl_training_set = hcl.asarray(np_training, dtype = Tdtype)
-    np_test_set = hcl.cast_np(np.loadtxt("data/test_set.dat"), Tdtype)
-    
-    hcl_test_set = hcl.asarray(np_test_set, dtype = Ttype)
-    
-    f(hcl_training_set, hcl_test_set, hcl_results)
-
-    results = hcl_results.asnumpy()
-
-    correct = 0
-
-    expected = np.loadtxt("data/expected.dat")
-    for i in range(NUM_TEST):
-      if(results[i] == expected[i]):
-        correct += 1
-      else:
-        print(f"should have been {expected[i]} but was {results[i]} ")
-    print(f'number correct: {correct}')
+#    
+#def test():
+#    
+#    Tdtype = hcl.Int()
+#    Rdtype = hcl.Int()
+#
+#    dtype = hcl.Int()
+#    f = top_digit_rec(dtype)
+#
+#    np_results = hcl.cast_np(np.zeros((NUM_TEST,), dtype=int), Rdtype)
+#    hcl_results = hcl.asarray(np_results, dtype = Rdtype)
+#        
+#    np_training_0 = np.loadtxt("data/training_set_0.dat")
+#    np_training_1 = np.loadtxt("data/training_set_1.dat")
+#    np_training_2 = np.loadtxt("data/training_set_2.dat")
+#    np_training_3 = np.loadtxt("data/training_set_3.dat")
+#    np_training_4 = np.loadtxt("data/training_set_4.dat")
+#    np_training_5 = np.loadtxt("data/training_set_5.dat")
+#    np_training_6 = np.loadtxt("data/training_set_6.dat")
+#    np_training_7 = np.loadtxt("data/training_set_7.dat")
+#    np_training_8 = np.loadtxt("data/training_set_8.dat")
+#    np_training_9 = np.loadtxt("data/training_set_9.dat")
+#    
+#    np_training = np.concatenate((np_training_0, np_training_1, np_training_2, np_training_3, np_training_4, np_training_5, np_training_6, np_training_7, np_training_8, np_training_9), axis = 0)
+#    
+#    hcl_training_set = hcl.asarray(np_training, dtype = Tdtype)
+#    np_test_set = hcl.cast_np(np.loadtxt("data/test_set.dat"), Tdtype)
+#    
+#    hcl_test_set = hcl.asarray(np_test_set, dtype = Ttype)
+#    
+#    f(hcl_training_set, hcl_test_set, hcl_results)
+#
+#    results = hcl_results.asnumpy()
+#
+#    correct = 0
+#
+#    expected = np.loadtxt("data/expected.dat")
+#    for i in range(NUM_TEST):
+#      if(results[i] == expected[i]):
+#        correct += 1
+#      else:
+#        print(f"should have been {expected[i]} but was {results[i]} ")
+#    print(f'number correct: {correct}')
       
 if __name__ == "__main__":
-    initial_test()
-    #codegen()
+    #test_zeros()
+    codegen()
 
       
